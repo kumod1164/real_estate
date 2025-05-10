@@ -1,0 +1,22 @@
+{
+  "name": "real_estate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Saiteja0730/real_estate.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Saiteja0730/real_estate/issues"
+  },
+  "homepage": "https://github.com/Saiteja0730/real_estate#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
