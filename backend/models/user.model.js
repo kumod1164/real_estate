@@ -18,6 +18,8 @@ const userSchema = new mongoose.Schema({
     avatar: {
         type: String,
         default: "https://www.transparentpng.com/thumb/user/gray-user-profile-icon-png-fP8Q1P.png",
+        
+
     },
 
     }, { timestamps: true });
