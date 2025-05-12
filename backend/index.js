@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import userroutes from './routes/userroutes.js';
 import authroutes from './routes/auth.route.js';
+import cookieParser from 'cookie-parser';
+
 
 dotenv.config();
 
@@ -23,9 +25,13 @@ app.use(cors({
 const PORT = 3000;
 
 app.use(express.json());
+app.use(cookieParser());
+
 app.use('/user', userroutes);
+
 app.use('/auth', authroutes);
 
+app.use(cookieParser());
 // middleware for handling errors
 
 app.use((err, req, res, next) => {
