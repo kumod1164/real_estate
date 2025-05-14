@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from 'react'
 import { getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/storage';
 import { app } from "../firebase.js";
-import {updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure} from "../redux/user/userSlice.js"
+import {updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure, signoutFailure, signoutStart, signoutSuccess} from "../redux/user/userSlice.js"
 import { useDispatch } from "react-redux";
 
 import { useNavigate } from 'react-router-dom';
@@ -104,6 +104,22 @@ const Profile = () => {
     }
   }
 
+  const handleSignout = async() => {
+    try {
+      dispatch(signoutStart());
+      const res = await fetch('http://localhost:3000/auth/signout');
+      const data = await res.json();
+      console.error('Signout request failed:', res.status, data);
+      if (data.success === false) {
+        dispatch(signoutFailure(data.message));
+        return;
+      }
+      dispatch(signoutSuccess(data));
+      navigate('/signin');
+    } catch (error) {
+      dispatch(signoutFailure(error.message));
+    }
+  }
   return (
     <div className="p-3 max-w-lg mx-auto rounded-lg">
       <h1 className="text-3xl font-semibold text-center my-3">Profile</h1>
@@ -161,7 +177,7 @@ const Profile = () => {
 
       <div className="flex justify-between mt-3">
         <span onClick={handleDeleteUser} className="text-red-600 cursor-pointer">Delete account</span>
-        <span className="text-red-600 cursor-pointer">Sign out</span>
+        <span onClick={handleSignout} className="text-red-600 cursor-pointer">Sign out</span>
       </div>
       <div className="flex justify-between mt-3">
         <p className="text-red-600">{error ? error : ''}</p>

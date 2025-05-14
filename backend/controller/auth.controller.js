@@ -85,3 +85,13 @@ export const google = async (req, res, next) => {
         next(errorHandler(500, error.message || "Internal server error"));
     }
 }
+
+
+export const signout = async (req, res, next) => {
+    try {
+       res.clearCookie("access_token");
+       res.status(200).json("User has been signed out successfully");
+    } catch (error) {
+        next(errorHandler(500, error.message || "Internal server error"));
+    }
+}   
