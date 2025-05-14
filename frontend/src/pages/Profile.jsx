@@ -2,10 +2,13 @@ import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from 'react'
 import { getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/storage';
 import { app } from "../firebase";
-import {updateUserStart, updateUserSuccess, updateUserFailure} from "../redux/user/userSlice.js"
+import {updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure} from "../redux/user/userSlice.js"
 import { useDispatch } from "react-redux";
 
+import { useNavigate } from 'react-router-dom';
+
 const Profile = () => {
+  const navigate = useNavigate();
   const fileRef = useRef(null);
   const dispatch = useDispatch();
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -78,6 +81,31 @@ const Profile = () => {
       dispatch(updateUserFailure(error.message));
     }
   }
+
+  const handleDeleteUser = async () => {
+    try {
+      dispatch(deleteUserStart());
+      console.log('Current User Object:', currentUser);
+      const res = await fetch(`http://localhost:3000/user/delete/${currentUser._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${currentUser.token}`,
+        },
+      });
+
+      const data = await res.json();
+      console.error('Delete request failed:', res.status, data);
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+      navigate('/signin');
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message));
+    }
+  }
+
   return (
     <div className="p-3 max-w-lg mx-auto rounded-lg">
       <h1 className="text-3xl font-semibold text-center my-3">Profile</h1>
@@ -134,7 +162,7 @@ const Profile = () => {
       </form>
 
       <div className="flex justify-between mt-3">
-        <span className="text-red-600 cursor-pointer">Delete account</span>
+        <span onClick={handleDeleteUser} className="text-red-600 cursor-pointer">Delete account</span>
         <span className="text-red-600 cursor-pointer">Sign out</span>
       </div>
       <div className="flex justify-between mt-3">
