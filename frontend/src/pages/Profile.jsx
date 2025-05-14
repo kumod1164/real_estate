@@ -4,8 +4,9 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/s
 import { app } from "../firebase.js";
 import {updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure, signoutFailure, signoutStart, signoutSuccess} from "../redux/user/userSlice.js"
 import { useDispatch } from "react-redux";
-
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import Createlisting from "./Createlisting.jsx";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -173,6 +174,11 @@ const Profile = () => {
         <button disabled={loading} className="bg-slate-600 text-white rounded-lg p-2 uppercase hover:opacity-90 disabled:opacity-80">
           {loading ? 'loading...' : 'Update'}
         </button>
+
+        <Link className="bg-green-700 text-white p-2 rounded-lg uppercase hover:opacity-80" to="/create-listing">
+        Create Listing
+        </Link>
+
       </form>
 
       <div className="flex justify-between mt-3">
