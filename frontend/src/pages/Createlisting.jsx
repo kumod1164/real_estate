@@ -83,7 +83,7 @@ const Createlisting = () => {
                 type="number"
                 id='regularprice'
                 min='1'
-                max='5'
+                max='10'
                 required
                 className='p-2 border border-gray-300 rounded-lg'
               />
@@ -97,7 +97,7 @@ const Createlisting = () => {
                 type="number"
                 id='discountprice'
                 min='1'
-                max='5'
+                max='10'
                 required
                 className='p-2 border border-gray-300 rounded-lg'
               />
