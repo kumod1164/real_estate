@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from 'react'
 import { getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/storage';
-import { app } from "../firebase";
+import { app } from "../firebase.js";
 import {updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure} from "../redux/user/userSlice.js"
 import { useDispatch } from "react-redux";
 
@@ -64,6 +64,7 @@ const Profile = () => {
       const res = await fetch(`http://localhost:3000/user/update/${currentUser._id}`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${currentUser.token}`,
           'Content-Type': 'application/json',
         },
         credentials: 'include',
@@ -88,9 +89,6 @@ const Profile = () => {
       console.log('Current User Object:', currentUser);
       const res = await fetch(`http://localhost:3000/user/delete/${currentUser._id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${currentUser.token}`,
-        },
       });
 
       const data = await res.json();
