@@ -23,17 +23,25 @@ const Createlisting = () => {
   });
   const [uploading, setUploading] = useState(false);
   const [user, setUser] = useState(null);
-  const [error , setError] = useState(false);
-  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const auth = getAuth(app);
-  const {currentUser} = useSelector((state) => state.user);
-  
+  const { currentUser } = useSelector((state) => state.user);
+
   // Check authentication state
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    if (!currentUser) {
+      setError("Please sign in first");
+      return;
+    }
+    
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
     });
-    return unsubscribe;
   }, [auth]);
 
   console.log(formData);
@@ -115,11 +123,12 @@ const Createlisting = () => {
     try {
       setLoading(true);
       setError(false);
-      const res = await fetch('/listing/create', {
+      const res = await fetch('http://localhost:3000/listing/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           ...formData,
           userRef: currentUser._id,

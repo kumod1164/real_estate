@@ -16,10 +16,24 @@ const Profile = () => {
   const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
   const [fileuploadError, setFileUploadError] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    avatar: currentUser?.avatar || '',
+    name: currentUser?.username || '',
+    email: currentUser?.email || ''
+  });
   const [uploadProgress, setUploadProgress] = useState(0);
   const [updateSuccess, setUpdateSuccess] = useState(false);
- 
+
+  useEffect(() => {
+    if (currentUser) {
+      setFormData({
+        avatar: currentUser.avatar || '',
+        name: currentUser.username || '',
+        email: currentUser.email || ''
+      });
+    }
+  }, [currentUser]);
+
   useEffect(() => {
     if(file) {
       handleFileUpload(file);
@@ -153,7 +167,7 @@ const Profile = () => {
           type="text"
           placeholder="username"
           defaultValue={currentUser.username}
-          id="username"
+          id="name"
           className="border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           onChange={handleChange}
         />

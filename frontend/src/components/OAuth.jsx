@@ -11,25 +11,38 @@ const OAuth = () => {
       const auth = getAuth(app);
       const result = await signInWithPopup(auth, provider);
 
-      const res = await fetch('/auth/google', {
+      const res = await fetch('http://localhost:3000/auth/google', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
-          name: result.user.displayName,
+          username: result.user.displayName,
           email: result.user.email,
           photo: result.user.photoURL,
         }),
       });
-      let data = null;
-      const contentType = res.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        data = await res.json();
-        dispatch(signInSuccess(data));
-      } else {
-        console.log('No JSON response from backend');
+      
+      const data = await res.json();
+      
+      if (res.status !== 200) {
+        throw new Error(data.message || 'Authentication failed');
       }
+      
+      // Extract token from cookie
+      const cookies = document.cookie.split('; ').find(row => row.startsWith('access_token='));
+      const token = cookies ? cookies.split('=')[1] : null;
+
+      // Store user data in Redux
+      dispatch(signInSuccess({
+        ...data,
+        name: result.user.displayName,
+        email: result.user.email,
+        avatar: result.user.photoURL,
+        _id: data._id,
+        token
+      }));
     } catch (error) {
       console.log('Could not sign in with google', error)  
     }

@@ -8,6 +8,10 @@ import cookieParser from 'cookie-parser';
 import listingRouter from './routes/listing.routes.js'; 
 
 dotenv.config();
+console.log('Environment variables loaded:', {
+  MONGODB: process.env.MONGODB,
+  JWT_SECRET: process.env.JWT_SECRET
+});
 
 
 mongoose.connect(process.env.MONGODB || 'mongodb://localhost:27017/real_estate').then(() => {
