@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { app } from '../firebase';
+import { useSelector } from 'react-redux';
 
 const Createlisting = () => {
   const [files, setFiles] = useState([]);
@@ -11,16 +12,22 @@ const Createlisting = () => {
     name: '',
     description: '',
     address: '',
-    sell: false,
-    rent: false,
+    type: '',
+    bedrooms: '1',
+    bathrooms: '1',
+    regularprice: '50',
+    discountprice: '50',
     parking: false,
     furnished: false,
-    offer: false
+    offer: false  
   });
   const [uploading, setUploading] = useState(false);
   const [user, setUser] = useState(null);
+  const [error , setError] = useState(false);
+  const [loading, setLoading] = useState(false); 
   const auth = getAuth(app);
-
+  const {currentUser} = useSelector((state) => state.user);
+  
   // Check authentication state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -29,18 +36,7 @@ const Createlisting = () => {
     return unsubscribe;
   }, [auth]);
 
-  // Handle file selection
-  const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    if (selectedFiles.length > 0 && selectedFiles.length <= 7) {
-      setFiles(selectedFiles);
-      setFormData(prev => ({
-        ...prev,
-        imageFiles: selectedFiles
-      }));
-    }
-  };
-  
+  console.log(formData);
   const handleImageSubmit = (e) => {
     if (!user) {
       console.error('User must be authenticated to upload images');
@@ -101,28 +97,70 @@ const Createlisting = () => {
     })
    }  
 
+  const handleChange = (e) => {
+   if(e.target.id === 'sale' || e.target.id === 'rent') {
+    setFormData({...formData, type: e.target.id}) 
+   }
+   if(e.target.id === 'parking' || e.target.id === 'furnished' || e.target.id === 'offer') {
+    setFormData({...formData, [e.target.id]: e.target.checked})   
+   }
+   if(e.target.type === 'number' || e.target.type === 'text' || e.target.type ==='textarea'){
+    setFormData({...formData, [e.target.id]: e.target.value}) 
+   } 
+
+  };
+   
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      setError(false);
+      const res = await fetch('/listing/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          userRef: currentUser._id,
+        }),
+      });
+      const data = await res.json();
+      setLoading(false);
+      if (data.success === false){
+        setError(data.message);
+      }
+      console.log("Listing created successfully:", data);
+    } catch (error) {
+      setError(error.message);  
+      setLoading(false);  
+    }
+  } 
+   
   return (
     <main className='p-3 max-w-4xl mx-auto'>
       <h1 className='text-2xl font-semibold text-center my-5'>Create a Listing</h1>
-      <form className='flex flex-col sm:flex-row gap-4'>
+      <form onSubmit={handleSubmit} className='flex flex-col sm:flex-row gap-4'>
         {/* Left Side */}
         <div className='flex flex-col gap-4 flex-1'>
           <input
             type="text"
-            placeholder='Name'
+            placeholder='name'
             className='border p-2 rounded-lg'
             id='name'
             maxLength='62'
             minLength='10'
             required
             value={formData.name}
-            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+            onChange={handleChange}
           />
           <textarea
             placeholder='Description'
             className='border p-2 rounded-lg'
             id='description'
             required
+            value={formData.description}
+            onChange={handleChange}
           ></textarea>
           <input
             type="text"
@@ -130,39 +168,30 @@ const Createlisting = () => {
             className='border p-2 rounded-lg'
             id='address'
             required
+            value={formData.address}
+            onChange={handleChange}
           />
-
-          {/* File Upload */}
-          <div className="mb-4">
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              className="border p-2 rounded-lg"
-              onChange={handleFileChange}
-            />
-          </div>
 
           {/* Checkboxes */}
           <div className="flex gap-6 flex-wrap">
             <div className='flex gap-2'>
-              <input type="checkbox" id='sell' className='w-5' />
-              <span>Sell</span>
+              <input type="checkbox" id='sale' className='w-5' onChange={handleChange} checked={formData.type === 'sale'}/>
+              <span>Sale</span>
             </div>
             <div className='flex gap-2'>
-              <input type="checkbox" id='rent' className='w-5' />
+              <input type="checkbox" id='rent' className='w-5' onChange={handleChange} checked={formData.type === 'rent'}/>
               <span>Rent</span>
             </div>
             <div className='flex gap-2'>
-              <input type="checkbox" id='parking' className='w-5' />
+              <input type="checkbox" id='parking' className='w-5' onChange={handleChange} checked={formData.parking}/>
               <span>Parking spot</span>
             </div>
             <div className='flex gap-2'>
-              <input type="checkbox" id='furnished' className='w-5' />
+              <input type="checkbox" id='furnished' className='w-5' onChange={handleChange} checked={formData.furnished}/>
               <span>Furnished</span>
             </div>
             <div className='flex gap-2'>
-              <input type="checkbox" id='offer' className='w-5' />
+              <input type="checkbox" id='offer' className='w-5' onChange={handleChange} checked={formData.offer} />
               <span>Offer</span>
             </div>
           </div>
@@ -177,6 +206,8 @@ const Createlisting = () => {
                 max='10'
                 required
                 className='p-2 border border-gray-300 rounded-lg'
+                value={formData.bedrooms}
+                onChange={handleChange} 
               />
               <p>Beds</p>
             </div>
@@ -188,6 +219,8 @@ const Createlisting = () => {
                 max='10'
                 required
                 className='p-2 border border-gray-300 rounded-lg'
+                value={formData.bathrooms}
+                onChange={handleChange}   
               />
               <p>Baths</p>
             </div>
@@ -195,10 +228,12 @@ const Createlisting = () => {
               <input
                 type="number"
                 id='regularprice'
-                min='1'
-                max='10'
+                min='50'
+                max='100000'
                 required
                 className='p-2 border border-gray-300 rounded-lg'
+                value={formData.regularprice}
+                onChange={handleChange}   
               />
               <div className='flex flex-col items-center'>
                 <p>Regular price</p>
@@ -209,10 +244,12 @@ const Createlisting = () => {
               <input
                 type="number"
                 id='discountprice'
-                min='1'
-                max='10'
+                min='50'
+                max='100000'
                 required
                 className='p-2 border border-gray-300 rounded-lg'
+                value={formData.discountprice}
+                onChange={handleChange}     
               />
               <div className='flex flex-col items-center'>
                 <p>Discounted price</p>
@@ -256,8 +293,9 @@ const Createlisting = () => {
             }
 
           <button className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>
-            Create Listing
+            {loading ? 'Creating...' : 'Create Listing'}  
           </button>
+          {error && <p className='text-red-700 text-sm'>{error}</p> }
         </div>
       </form>
     </main>

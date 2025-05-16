@@ -10,11 +10,11 @@ import listingRouter from './routes/listing.routes.js';
 dotenv.config();
 
 
-mongoose.connect(process.env.MONGODB).then(() => {
+mongoose.connect(process.env.MONGODB || 'mongodb://localhost:27017/real_estate').then(() => {
     console.log('Connected to MongoDB');
-}).catch((err) => {
+  }).catch((err) => {
     console.error('Error connecting to MongoDB:', err);
-});
+  });
 
 const app = express();
 
