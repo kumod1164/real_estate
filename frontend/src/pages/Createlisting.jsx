@@ -3,8 +3,10 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { app } from '../firebase';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; 
 
 const Createlisting = () => {
+  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
     imageUrls: [],
@@ -16,7 +18,7 @@ const Createlisting = () => {
     bedrooms: '1',
     bathrooms: '1',
     regularPrice: '50',
-    discountPrice: '50',
+    discountPrice: '0',
     parking: false,
     furnished: false,
     offer: false  
@@ -121,6 +123,8 @@ const Createlisting = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if(formData.imageUrls.length < 1) return setError('Please upload at least one image'); 
+      if(+formData.regularPrice < +formData.discountPrice  ) return setError('Discount price should be less than regular price');
       setLoading(true);
       setError(false);
       const res = await fetch('http://localhost:3000/listing/create', {
@@ -139,6 +143,7 @@ const Createlisting = () => {
       if (data.success === false){
         setError(data.message);
       }
+      navigate(`/listing/${data._id}`);
       console.log("Listing created successfully:", data);
     } catch (error) {
       setError(error.message);  
@@ -249,22 +254,24 @@ const Createlisting = () => {
                 <span className='text-xs'>(₹ / Month)</span>
               </div>
             </div>
+            {formData.offer && (
             <div className='flex items-center gap-2'>
-              <input
-                type="number"
-                id='discountPrice'
-                min='50'
-                max='100000'
-                required
-                className='p-2 border border-gray-300 rounded-lg'
-                value={formData.discountPrice}
-                onChange={handleChange}     
-              />
+            <input
+              type="number"
+              id='discountPrice'
+              min='0'
+              max='100000'
+              required
+              className='p-2 border border-gray-300 rounded-lg'
+              value={formData.discountPrice}
+              onChange={handleChange}     
+            />
               <div className='flex flex-col items-center'>
                 <p>Discounted price</p>
                 <span className='text-xs'>(₹ / Month)</span>
               </div>
             </div>
+            )}
           </div>
         </div>
 
@@ -301,7 +308,7 @@ const Createlisting = () => {
               ))
             }
 
-          <button className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>
+          <button disabled={loading || uploading}   className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>
             {loading ? 'Creating...' : 'Create Listing'}  
           </button>
           {error && <p className='text-red-700 text-sm'>{error}</p> }
