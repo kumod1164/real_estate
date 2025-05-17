@@ -15,8 +15,8 @@ const Createlisting = () => {
     type: '',
     bedrooms: '1',
     bathrooms: '1',
-    regularprice: '50',
-    discountprice: '50',
+    regularPrice: '50',
+    discountPrice: '50',
     parking: false,
     furnished: false,
     offer: false  
@@ -236,12 +236,12 @@ const Createlisting = () => {
             <div className='flex items-center gap-2'>
               <input
                 type="number"
-                id='regularprice'
+                id='regularPrice'
                 min='50'
                 max='100000'
                 required
                 className='p-2 border border-gray-300 rounded-lg'
-                value={formData.regularprice}
+                value={formData.regularPrice}
                 onChange={handleChange}   
               />
               <div className='flex flex-col items-center'>
@@ -252,12 +252,12 @@ const Createlisting = () => {
             <div className='flex items-center gap-2'>
               <input
                 type="number"
-                id='discountprice'
+                id='discountPrice'
                 min='50'
                 max='100000'
                 required
                 className='p-2 border border-gray-300 rounded-lg'
-                value={formData.discountprice}
+                value={formData.discountPrice}
                 onChange={handleChange}     
               />
               <div className='flex flex-col items-center'>
