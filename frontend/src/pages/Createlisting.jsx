@@ -143,7 +143,7 @@ const Createlisting = () => {
       if (data.success === false){
         setError(data.message);
       }
-      navigate(`/listing/${data._id}`);
+      navigate(`/listing/${data.listing._id}`);
       console.log("Listing created successfully:", data);
     } catch (error) {
       setError(error.message);  

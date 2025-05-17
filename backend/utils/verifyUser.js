@@ -9,8 +9,10 @@ export const verifyToken = (req, res, next) => {
     if (!token) return res.status(403).json("You are not authenticated!");
   
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-      if (err) return res.status(403).json("Token is not valid!");
-      req.user = user;
+      if (err) {
+        return next(errorHandler(403, 'Forbidden'));
+      }
+      req.user = user; // Attach user to the request
       next();
     });
   };
