@@ -9,6 +9,8 @@ import Header from './components/Header';
 import PrivateRoute from './components/PrivateRoute';
 import Createlisting from './pages/Createlisting';
 import Listing from '../../backend/models/listing.model';
+import UpdateListing from './pages/UpdateListing';
+
 
 
 const App = () => {
@@ -24,8 +26,9 @@ const App = () => {
         <Route path="/signup" element={<Signup/>} />
         <Route  element={<PrivateRoute/>}>
         <Route path="/profile" element={<Profile/>} />
-        <Route path="/listing/:id" element={<Listing/>}/> 
+        <Route path="/listing/:listingId" element={<Listing/>}/> 
         <Route path="/create-listing" element={<Createlisting/>}/>
+        <Route path="/update-listing/:listingId" element={<UpdateListing/>}/>  
         </Route>
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
