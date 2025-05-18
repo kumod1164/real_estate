@@ -6,13 +6,13 @@ import {updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, 
 import { useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import Createlisting from "./Createlisting.jsx";
 
 const Profile = () => {
   const navigate = useNavigate();
   const fileRef = useRef(null);
   const dispatch = useDispatch();
-  const { currentUser, loading, error } = useSelector((state) => state.user);
+  const { currentUser,loading, error } = useSelector((state) => state.user);
+  const token = useSelector((state) => state.user.token);
   const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
   const [fileuploadError, setFileUploadError] = useState(false);
@@ -23,7 +23,8 @@ const Profile = () => {
   });
   const [uploadProgress, setUploadProgress] = useState(0);
   const [updateSuccess, setUpdateSuccess] = useState(false);
-
+  const [showListingsError, setShowListingsError] = useState(false);
+  const [userListings, setUserListings] = useState([]);
   useEffect(() => {
     if (currentUser) {
       setFormData({
@@ -39,6 +40,8 @@ const Profile = () => {
       handleFileUpload(file);
     }
   }, [file]);
+
+  console.log('User state:', useSelector((state) => state.user));
 
   const handleFileUpload = (file) => {
     const storage = getStorage(app);
@@ -135,6 +138,55 @@ const Profile = () => {
       dispatch(signoutFailure(error.message));
     }
   }
+
+  const handleShowListings = async () => {
+    try {
+      setShowListingsError(false);
+      
+      // Get token from cookie
+      // const cookies = document.cookie.split(';');
+      // let token = '';
+      // for (let i = 0; i < cookies.length; i++) {
+      //   const cookie = cookies[i].trim();
+      //   if (cookie.startsWith('access_token=')) {
+      //     token = cookie.substring('access_token='.length);
+      //     break;
+      //   }
+      // }
+
+      // if (!token) {
+      //   console.error('No token found in cookies');
+      //   setShowListingsError(true);
+      //   return;
+      // }
+
+
+      console.log('Current User:', currentUser);
+      console.log('Token:', token);
+      // Make the request with the token
+      const res = await fetch(`http://localhost:3000/user/listings/${currentUser._id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
+
+      const data = await res.json();
+      console.log('Response:', data);
+      if (data.success === false ||  !res.ok) {
+        console.error('Failed to fetch listings:', data);
+        setShowListingsError(true);
+        return;
+      }
+      setUserListings(data);  
+      console.log('Listings fetched successfully:', data);
+    } catch (error) {
+      console.error('Error during fetch:', error);
+      setShowListingsError(true);
+    }
+  };
+  
   return (
     <div className="p-3 max-w-lg mx-auto rounded-lg">
       <h1 className="text-3xl font-semibold text-center my-3">Profile</h1>
@@ -203,6 +255,15 @@ const Profile = () => {
         <p className="text-red-600">{error ? error : ''}</p>
         <p className="text-green-700 mt-3">{updateSuccess ? 'User updated successfully' : ''}</p>
       </div>
+      <button onClick={handleShowListings} className="text-green-700 w-full rounded-lg  hover:opacity-80">Show Listings</button>
+      <p className="text-red-700 mt-5">{showListingsError ? 'Error showing listings' : ''} </p>
+      {userListings && userListings.length > 0 && userListings.map((listing) => <div key={listing._id}
+      className="">
+        <Link to={`/listing/${listing._id}`}>{listing.title}
+        <img src={listing.imageUrls[0]} alt="listing cover" />  
+        </Link>
+        
+      </div>)}
     </div>
   );
 };

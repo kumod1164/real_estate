@@ -44,16 +44,28 @@ export const deleteUser = async (req, res, next) => {
     }     
 };
 
-export const getUserListings  = async (req, res, next) => {
-    if(req.user.id === req.params.id) {
-      try {
+export const getUserListings = async (req, res, next) => {
+    try {
+        console.log('Request user ID:', req.user?.id);
+        console.log('Request params ID:', req.params.id);
+        
+        // Verify user ID matches
+        if(!req.user) {
+            console.error('No user found in request');
+            return next(errorHandler(403, "Access denied: No user found"));
+        }
+
+        if(req.user.id.toString() !== req.params.id) {
+            console.error('User ID mismatch:', { userId: req.user.id, paramsId: req.params.id });
+            return next(errorHandler(403, "Access denied: You can only view your own listings"));
+        }
+
+        // Find listings for the user
         const listings = await Listing.find({userRef: req.params.id});
+        console.log('Found listings:', listings.length);
         return res.status(200).json(listings);
-      } catch (error) {
-        next(error) 
-      } 
-    }else{
-        return next(errorHandler(401, "You can only get your own listings"));
+    } catch (error) {
+        console.error('Error in getUserListings:', error);
+        next(error);
     }
-    
-}
+};

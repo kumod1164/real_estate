@@ -3,8 +3,7 @@ import bcrypt from "bcryptjs";
 import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 
-// Debug logs to check environment variables
-console.log('JWT_SECRET:', process.env.JWT_SECRET);
+
 
 // Fallback JWT secret if environment variable is not loaded
 const JWT_SECRET = process.env.JWT_SECRET || 'asunigy3212gdasbk8zhh';
@@ -64,7 +63,7 @@ export const signin = async (req, res, next) => {
         const { password: hashedPassword, ...rest } = user._doc;
         res.cookie('access_token', token, { httpOnly: true }).status(200).json(rest);
 
-        res.status(200).json({ message: "Login successful", user });
+
     } catch (error) {
         console.error('Signin error:', error);
         next(errorHandler(500, error.message || "Internal server error"));
