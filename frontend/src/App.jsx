@@ -8,7 +8,7 @@ import Signup from './pages/Signup';
 import Header from './components/Header';
 import PrivateRoute from './components/PrivateRoute';
 import Createlisting from './pages/Createlisting';
-import Listing from '../../backend/models/listing.model';
+import Listing from './pages/Listing';
 import UpdateListing from './pages/UpdateListing';
 
 
