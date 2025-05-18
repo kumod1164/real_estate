@@ -187,6 +187,46 @@ const Profile = () => {
     }
   };
   
+     const handleListingDelete = async (listingId) => {
+  try {
+    const res = await fetch(`http://localhost:3000/listing/delete/${listingId}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+
+    // Check if response is successful
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Server error:', errorText);
+      setShowListingsError(true);
+      return;
+    }
+
+    // Try to parse JSON if available
+    let data;
+    try {
+      data = await res.json();
+    } catch (e) {
+      console.error('Response is not JSON:', e);
+      return;
+    }
+
+    if (data.success === false) {
+      console.error('Delete failed:', data.message);
+      setShowListingsError(true);
+      return;
+    }
+
+    // Update listings state
+    setUserListings((prev) =>
+      prev.filter((listing) => listing._id !== listingId)
+    );
+
+  } catch (error) {
+    console.error('Error deleting listing:', error);
+    setShowListingsError(true);
+  }
+};
   return (
     <div className="p-3 max-w-lg mx-auto rounded-lg">
       <h1 className="text-3xl font-semibold text-center my-3">Profile</h1>
@@ -268,7 +308,7 @@ const Profile = () => {
         </Link> 
 
          <div className="flex flex-col items-center gap-2">
-         <button className="text-red-600 uppercase"  >Delete</button>
+         <button onClick={()=>handleListingDelete(listing._id)} className="text-red-600 uppercase"  >Delete</button>
          <button className="text-green-600 uppercase"  >Edit</button>  
          </div>
 
