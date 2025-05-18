@@ -258,11 +258,20 @@ const Profile = () => {
       <button onClick={handleShowListings} className="text-green-700 w-full rounded-lg  hover:opacity-80">Show Listings</button>
       <p className="text-red-700 mt-5">{showListingsError ? 'Error showing listings' : ''} </p>
       {userListings && userListings.length > 0 && userListings.map((listing) => <div key={listing._id}
-      className="">
+      className="border rounded-lg p-3 flex justify-between items-center gap-4">
         <Link to={`/listing/${listing._id}`}>{listing.title}
-        <img src={listing.imageUrls[0]} alt="listing cover" />  
+        <img src={listing.imageUrls[0]} alt="listing cover"
+        className="h-16 w-16 object-contain" />  
         </Link>
-        
+        <Link className="text-slate-7 font-semibold hover:underline truncate flex-1" to={`/listing/${listing._id}`}>
+        <p>{listing.name}</p>
+        </Link> 
+
+         <div className="flex flex-col items-center gap-2">
+         <button className="text-red-600 uppercase"  >Delete</button>
+         <button className="text-green-600 uppercase"  >Edit</button>  
+         </div>
+
       </div>)}
     </div>
   );
