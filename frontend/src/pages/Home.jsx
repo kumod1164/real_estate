@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
-import 'swiper/css/bundle';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 import ListingItem from '../components/ListingItem';
 
 const Home = () => {
@@ -82,19 +84,39 @@ const Home = () => {
 
       {/* Swiper */}
       {!loading && !error && offerListings.length > 0 && (
-        <Swiper navigation>
-          {offerListings.map((listing) => (
-            <SwiperSlide key={listing._id}>
-              <div
-                style={{
-                  background: `url(${listing.imageUrls[0]}) center no-repeat`,
-                  backgroundSize: 'cover',
-                }}
-                className='h-[500px]'
-              ></div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        <div className='max-w-6xl mx-auto mb-12'>
+          <div className='my-3'>
+            <h2 className='text-2xl font-semibold text-slate-600'>Featured Properties</h2>
+          </div>
+          <Swiper
+            modules={[Navigation, Pagination]}
+            navigation={true}
+            pagination={{ clickable: true }}
+            spaceBetween={10}
+            slidesPerView={1}
+            className='swiper-container'
+          >
+            {offerListings.map((listing) => (
+              <SwiperSlide key={listing._id}>
+                <div className='relative h-[400px] sm:h-[500px]'>
+                  <img
+                    src={
+                      listing.imageUrls?.[0] ||
+                      'https://53.fs1.hubspotusercontent-na1.net/hub/53/hubfs/Sales_Blog/real-estate-business-compressor.jpg?width=595&height=400&name=real-estate-business-compressor.jpg'
+                    }
+                    alt={listing.name || 'Property listing'}
+                    className='w-full h-full object-cover'
+                  />
+                  <div className='absolute inset-0 bg-black/30'></div>
+                  <div className='absolute bottom-4 left-4 text-white'>
+                    <h3 className='text-xl font-semibold mb-2'>{listing.name}</h3>
+                    <p className='text-sm'>{listing.address}</p>
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
       )}
 
       {/* Offer Listings */}
