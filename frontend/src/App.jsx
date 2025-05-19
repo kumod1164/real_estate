@@ -10,6 +10,9 @@ import PrivateRoute from './components/PrivateRoute';
 import Createlisting from './pages/Createlisting';
 import Listing from './pages/Listing';
 import UpdateListing from './pages/UpdateListing';
+import Search from './pages/Search';
+
+
 
 
 
@@ -26,6 +29,7 @@ const App = () => {
         <Route path="/signup" element={<Signup/>} />
         <Route  element={<PrivateRoute/>}>
         <Route path="/profile" element={<Profile/>} />
+        <Route path="/search" element={<Search/>}/>
         <Route path="/listing/:listingId" element={<Listing/>}/> 
         <Route path="/create-listing" element={<Createlisting/>}/>
         <Route path="/update-listing/:listingId" element={<UpdateListing/>}/>  
@@ -33,6 +37,7 @@ const App = () => {
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
       </BrowserRouter>
+      
     </>
   )
 }
