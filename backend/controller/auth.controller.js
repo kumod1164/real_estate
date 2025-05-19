@@ -59,7 +59,7 @@ export const signin = async (req, res, next) => {
         if (!isPasswordValid) {
             return res.status(401).json({ success: false, statusCode: 401, message: "Invalid password" });
         }
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
         const { password: hashedPassword, ...rest } = user._doc;
         res.cookie('access_token', token, { httpOnly: true }).status(200).json(rest);
 
