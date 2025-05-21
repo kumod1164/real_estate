@@ -9,6 +9,7 @@ import listingRouter from './routes/listing.routes.js';
 import path from 'path';  
 
 dotenv.config();
+const app = express();
 console.log('Environment variables loaded:', {
   MONGODB: process.env.MONGODB,
   JWT_SECRET: process.env.JWT_SECRET
@@ -26,7 +27,7 @@ mongoose.connect(process.env.MONGODB || 'mongodb://localhost:27017/real_estate')
     res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
  });
 
-const app = express();
+
 
 // Logging middleware
 app.use((req, res, next) => {
