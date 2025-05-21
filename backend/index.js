@@ -21,6 +21,7 @@ mongoose.connect(process.env.MONGODB || 'mongodb://localhost:27017/real_estate')
     console.error('Error connecting to MongoDB:', err);
   });
 
+  
  const __dirname = path.resolve();
  app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
  app.get('*', (req, res) => {
